@@ -4,9 +4,9 @@ const {
   Runner, 
   World, 
   Bodies, 
-  Body, //iti da acces la diferite proprietati ale unei forme
-  Events //evenimentele formelor
-} = Matter; //destructuring(scoaterea de info) Engine-tranzitie; Render-ptr desen; Runner-coordoneaza update uri intre engine si world;bodies-referinta la colectia modelelor ce pot fi desenate; 
+  Body, 
+  Events 
+} = Matter; 
 
 const cellsHorizontal = 10;
 const cellsVertical = 10;
@@ -28,14 +28,14 @@ const render = Render.create({ //cream obiectul render
     height
   }
 });
-Render.run(render); //trebuie sa ii apelam metoda "run" pentru a se crea canvas-ul
-Runner.run(Runner.create(), engine); //coordoneaza schimbarile engine-ului
+Render.run(render); 
+Runner.run(Runner.create(), engine); 
 
  
 // Walls
-const walls = [ //peretii se vor forma in functie de marimea canvas-ului
+const walls = [ 
   //sus
-  Bodies.rectangle(width / 2, 0, width, 2, { isStatic: true }),   // - distanta de la stanga, la jumatatea lungimii; -distanta in jos -latimea dreptunghiului care trebuie sa fie ca latimea canvas-ului; -inaltimea dreptunghiului
+  Bodies.rectangle(width / 2, 0, width, 2, { isStatic: true }),  
   //jos
   Bodies.rectangle(width / 2, height, width, 2, { isStatic: true }),
   //stanga
@@ -47,7 +47,7 @@ World.add(world, walls);
 
             // Maze generation
 
-const shuffle = arr => { //primeste ca parametru un array si aseaza random toate elementele din el(randomizeaza vecinii posibili din momentul t)
+const shuffle = arr => { 
   let counter = arr.length;
 
   while (counter > 0) {
@@ -63,9 +63,9 @@ const shuffle = arr => { //primeste ca parametru un array si aseaza random toate
   return arr;
 };
 
-const grid = Array(cellsVertical) //creeaza un array gol (cellsVertical reprezinta nr de linii)
+const grid = Array(cellsVertical) 
   .fill(null)
-  .map(() => Array(cellsHorizontal).fill(false)); //( cellsHorizontal reprezinta nr de coloane)se face fill-ul cu map(adica se apeleaza functia de creare array de cellsHorizontal ori, si cele cellsHorizontal arrayuri vor fi diferite), daca il fac fara, cand vreau o sa modific un element in array o sa se modifice toti, nu doar cel ales de mine
+  .map(() => Array(cellsHorizontal).fill(false)); 
 
 const verticals = Array(cellsVertical) //repsrezinta peretii verticali din interiorul labirintului
   .fill(null)
@@ -89,14 +89,14 @@ const stepThroughCell = (row, column) => {
   //marchez patratelul ca vizitat
   grid[row][column] = true;
 
-  //pentru fiecare vecin...
+ 
   const neighbors = shuffle([
     [row - 1, column, 'up'],
     [row, column + 1, 'right'],
     [row + 1, column, 'down'],
     [row, column - 1, 'left']
   ]);
-  // For each neighbor....
+   //pentru fiecare vecin...
   for (let neighbor of neighbors) {
     const [nextRow, nextColumn, direction] = neighbor; //celula pe care ne gandim sa o vizitam in continuare
 
@@ -132,13 +132,15 @@ const stepThroughCell = (row, column) => {
 
 stepThroughCell(startRow, startColumn);
 
-// row-elementul pe care ni-l returneaza, rowIndex- indexul elementului returnat
-horizontals.forEach((row, rowIndex) => { //cu forEach o sa primim un un array din interiorul horizantals
+
+horizontals.forEach((row, rowIndex) => { 
   row.forEach((open, columnIndex) => { //daca open e true, inseamna ca nu e perete
     if (open) {
       return;
     }
-    //formulele pentru construirea dreptunghiurilor care reprezinta peretii
+    
+    
+   //Wall
 
     const wall = Bodies.rectangle(
       columnIndex * unitLengthX + unitLengthX / 2,
@@ -188,7 +190,7 @@ const goal = Bodies.rectangle(
   unitLengthX * 0.7,
   unitLengthY * 0.7,
   {
-    label: 'goal', //trebuie dat alt nume ptr coliziune, altfel se va numi "rectangle"
+    label: 'goal',
     isStatic: true,
     render: {
       fillStyle: 'green'
@@ -232,7 +234,7 @@ document.addEventListener('keydown', event => {
 
 // Win Condition
 
-Events.on(engine, 'collisionStart', event => {//eventul se declanseaza de fiecare data cand apare o coliziune intre 2 elem
+Events.on(engine, 'collisionStart', event => {
   event.pairs.forEach(collision => {
     const labels = ['ball', 'goal'];
 
@@ -244,7 +246,7 @@ Events.on(engine, 'collisionStart', event => {//eventul se declanseaza de fiecar
       world.gravity.y = 1; //activam gravitatia
       world.bodies.forEach(body => {
         if (body.label === 'wall') {
-          Body.setStatic(body, false);//acest obiect(body) nu mai este static, diferite elemente il pot afecta 
+          Body.setStatic(body, false);
         }
       });
     }
